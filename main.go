@@ -53,7 +53,7 @@ func manageBlobs(url string, containerName string, ctx context.Context, credenti
 	client, err := azblob.NewClient(url, credential, nil)
 	handleError(err)
 
-	pager := client.NewListBlobsFlatPager(containerName, nil)
+	pager := client.NewListBlobsFlatPager(containerName, nil)		
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		handleError(err)
@@ -126,7 +126,7 @@ func getLastCheckpointForBlob(url string, ctx context.Context, credential *azide
 }
 
 func main() {
-	url := "https://mystorage.blob.core.windows.net/"
+	url := "https://ansalemostorage.blob.core.windows.net/"
 	containerName := "general"
 	ctx := context.Background()
 	// Create credentials
@@ -148,16 +148,23 @@ func main() {
 		switch sig {
 		case os.Interrupt:
 			zap.L().Warn("CTRL+C / os.Interrupt recieved, shutting down the application..")
+			// Update last checkpoint for the blob
 			updateCheckpointForBlob(url, ctx, credential)
 			os.Exit(0)
 		case syscall.SIGTERM:
 			zap.L().Warn("SIGTERM recieved.., shutting down the application..")
+			// Update last checkpoint for the blob
+			updateCheckpointForBlob(url, ctx, credential)
 			os.Exit(0)
 		case syscall.SIGQUIT:
 			zap.L().Warn("SIGQUIT recieved.., shutting down the application..")
+			// Update last checkpoint for the blob
+			updateCheckpointForBlob(url, ctx, credential)
 			os.Exit(0)
 		case syscall.SIGINT:
 			zap.L().Warn("SIGINT recieved.., shutting down the application..")
+			// Update last checkpoint for the blob
+			updateCheckpointForBlob(url, ctx, credential)
 			os.Exit(0)
 		}
 	}()
@@ -165,4 +172,7 @@ func main() {
 	// uploadBlobs(url, containerName, ctx, credential)
 	// Manage blobs
 	manageBlobs(url, containerName, ctx, credential)
+	// Update last checkpoint for the blob
+	// This will run after manageBlobs() completes - this would be a "typical" succesful application run
+	updateCheckpointForBlob(url, ctx, credential)
 }

@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jobterminationlogic
+spec:
+  template:
+    spec:
+      containers:
+      - name: jobterminationlogic
+        image: jobterminationlogic:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: AZURE_TENANT_ID
+          value: ""
+        - name: AZURE_CLIENT_ID
+          value: ""
+        - name: AZURE_CLIENT_SECRET
+          value: ""
+      restartPolicy: Never
+
